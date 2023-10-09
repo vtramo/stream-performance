@@ -9,7 +9,7 @@ public class TestStreamPerformance {
     static final SorterNoStream sorterNoStream = new SorterNoStream();
     static final SorterStream sorterStream = new SorterStream();
 
-    @Param({"100", "200"})
+    @Param({"500", "1000", "1500", "2000", "5000"})
     int volume;
 
     @Benchmark

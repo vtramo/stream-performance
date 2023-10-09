@@ -1,7 +1,5 @@
 package org.example;
 
-import java.util.Arrays;
-
 /*
   Make 100, 1k, 10k, 100k, 1m elements with 100, 1k, 10k, 100k, 1m randomly generated numbers respectevly.
   What to do:
@@ -14,83 +12,49 @@ import java.util.Arrays;
 */
 public class SorterNoStream {
     public long sort(Element[] elements) {
-        Element element;
         int[] numbers;
-        int average;
         long finalSum = 0L;
 
-        for (int i = 0; i < elements.length; i++) {
-            element = elements[i];
+        for (Element element: elements) {
             numbers = element.getNumbers();
-            Arrays.sort(numbers);
-            average = avgInt(numbers);
-            numbers = keepUnique(numbers);
-            numbers = filterOutLowerThanAvg(numbers, average);
-            finalSum += sum(numbers);
+            OrderedResultWithSum orderedResultWithSum = applyOperations(numbers);
+            finalSum += orderedResultWithSum.sum;
         }
 
         return finalSum / elements.length;
     }
 
-    private int avgInt(int[] numbers) {
-        Long sum = sum(numbers);
-        sum /= numbers.length;
-        return sum.intValue();
-    }
+    private record OrderedResultWithSum(int[] result, int sum) {}
 
-    private int[] keepUnique(int[] numbers) {
-        if (numbers.length == 0) {
-            return new int[0];
+    private OrderedResultWithSum applyOperations(int[] numbers) {
+        int[] hashArray = new int[Element.BOUND];
+        int sum = 0;
+
+        for (int number: numbers) {
+            sum += number;
+            hashArray[number] = 1;
         }
-        if (numbers.length == 1) {
-            return numbers;
-        }
+
+        int avg = sum / numbers.length;
+
         int newSize = 0;
-        for (int i = 0; i < numbers.length - 1; i++) {
-            if (numbers[i] != numbers[i + 1]) {
+        for (int number: numbers) {
+            if (number >= avg) {
                 newSize++;
+            } else {
+                hashArray[number] = 0;
             }
         }
-        if (numbers[numbers.length - 2] != numbers[numbers.length - 1]) {
-            newSize++;
-        }
-        int[] result = new int[newSize];
-        int j = 0;
-        for (int i = 0; i < numbers.length - 1; i++) {
-            if (numbers[i] != numbers[i + 1]) {
-                result[j] = numbers[i];
-                j++;
-            }
-        }
-        if (numbers[numbers.length - 2] != numbers[numbers.length - 1]) {
-            result[j] = numbers[numbers.length - 1];
-        }
-        return result;
-    }
 
-    private int[] filterOutLowerThanAvg(int[] numbers, int average) {
-        int newSize = 0;
-        for (int i = 0; i < numbers.length; i++) {
-            if (numbers[i] >= average) {
-                newSize++;
-            }
-        }
         int[] result = new int[newSize];
-        int j = 0;
-        for (int i = 0; i < numbers.length; i++) {
-            if (numbers[i] >= average) {
-                result[j] = numbers[i];
-                j++;
-            }
+        int index = 0;
+        int finalSum = 0;
+        for (int number = 0; number < hashArray.length; number++) {
+            if (hashArray[number] == 0) continue;
+            result[index++] = number;
+            finalSum += number;
         }
-        return result;
-    }
 
-    private long sum(int[] numbers) {
-        long sum = 0L;
-        for (int i = 0; i < numbers.length; i++) {
-            sum += numbers[i];
-        }
-        return sum;
+        return new OrderedResultWithSum(result, finalSum);
     }
 }

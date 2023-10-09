@@ -3,6 +3,7 @@ package org.example;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Element {
+    public static final int BOUND = 10000;
     private int[] numbers;
 
     public Element(int[] numbers) {
@@ -28,7 +29,7 @@ public class Element {
         for (int i = 0; i < volume; i++) {
             int[] numbers = new int[numbersVolume];
             for (int j = 0; j < numbersVolume; j++) {
-                numbers[j] = ThreadLocalRandom.current().nextInt(10000);
+                numbers[j] = ThreadLocalRandom.current().nextInt(BOUND);
             }
             elements[i] = new Element(numbers);
         }
